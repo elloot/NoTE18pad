@@ -1,10 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 /**
  * Class description
@@ -24,38 +20,72 @@ public class GUI {
         frame.setContentPane(this.RootPane);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-
         menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         JMenuItem saveItem = new JMenuItem("Save");
+        JMenuItem openItem = new JMenuItem("Open");
         fileMenu.add(saveItem);
+        fileMenu.add(openItem);
         menuBar.add(fileMenu);
         frame.setJMenuBar(menuBar);
 
-        saveItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println(textPane1);
+        saveItem.addActionListener(e -> {
+            fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save file");
+            int result = fileChooser.showOpenDialog(frame);
 
-                fileChooser = new JFileChooser();
-                fileChooser.setDialogTitle("Save file");
-                int result = fileChooser.showOpenDialog(frame);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                String file = fileChooser.getSelectedFile().getAbsolutePath();
+                String content = textPane1.getText();
 
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    String fileName = fileChooser.getSelectedFile().getAbsolutePath();
-                    String content = textPane1.getText();
-
-                    try {
-                        PrintWriter outStream = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
-                        outStream.print(content);
-                        outStream.close();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                } else {
-                    System.out.println("No file was chosen!");
-                    System.exit(0);
+                try {
+                    PrintWriter outStream = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+                    outStream.print(content);
+                    outStream.flush();
+                    outStream.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
+            } else {
+                System.out.println("No file was chosen!");
+                System.exit(0);
+            }
+        });
+
+        openItem.addActionListener(e -> {
+            fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Open file");
+            int result = fileChooser.showOpenDialog(frame);
+
+            if (result == JFileChooser.APPROVE_OPTION) {
+                String file = fileChooser.getSelectedFile().getAbsolutePath();
+                //String content = textPane1.getText();
+
+                try {
+                     BufferedReader inStream = new BufferedReader(new FileReader(file));
+                     StringBuilder fileContent = new StringBuilder();
+
+                     LineNumberReader lnr = new LineNumberReader(new FileReader(file));
+                     int lineCount = 0;
+
+                     while (lnr.readLine() != null) {
+                         lineCount++;
+                     }
+
+                     for (int i = 0; i < lineCount; i++) {
+                         fileContent.append(inStream.readLine());
+                         if (i != lineCount-1) {
+                             fileContent.append("\n");
+                         }
+                     }
+
+                     textPane1.setText(String.valueOf(fileContent));
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                System.out.println("No file was chosen!");
+                System.exit(0);
             }
         });
 
