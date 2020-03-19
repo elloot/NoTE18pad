@@ -24,6 +24,8 @@ public class GUI {
         JMenu fileMenu = new JMenu("File");
         JMenuItem saveItem = new JMenuItem("Save");
         JMenuItem openItem = new JMenuItem("Open");
+        openItem.setAccelerator(KeyStroke.getKeyStroke('O', Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+        saveItem.setAccelerator(KeyStroke.getKeyStroke('S', Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
         fileMenu.add(saveItem);
         fileMenu.add(openItem);
         menuBar.add(fileMenu);
